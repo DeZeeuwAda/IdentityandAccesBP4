@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/gebruikersnaamInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Gebruikersnaam"/>
+
+    <EditText
+        android:id="@+id/wachtwoordInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Wachtwoord"
+        android:inputType="textPassword"/>
+
+    <Button
+        android:id="@+id/inlogBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Inloggen"/>
+
+    <Button
+        android:id="@+id/registreerBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Registeer" />
+</LinearLayout>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "698786260485",
+    "firebase_url": "https://identity-and-acces-manag-c93e1-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "identity-and-acces-manag-c93e1",
+    "storage_bucket": "identity-and-acces-manag-c93e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698786260485:android:18cf74401f783cb0389e6c",
+        "android_client_info": {
+          "package_name": "com.example.identityandacces"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "698786260485-vehhqqkh5vg7n9i7cmc7b8mmd2i1s6eo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAe2Zkg5gv3rES62KRHkC5HS_DBQsKG3ws"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "698786260485-vehhqqkh5vg7n9i7cmc7b8mmd2i1s6eo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
