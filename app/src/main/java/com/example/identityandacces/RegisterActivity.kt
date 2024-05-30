@@ -60,7 +60,7 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    // Requirement 10, 11, 12, 13: Validating password and providing specific error messages
+    // Requirement 10, 11, 12, 13: Wachtwoord maken en kijken of het voldoet aan alle eisen
     private fun validatePassword(password: String): String? {
         if (password.length < 8) {
             return "Wachtwoord moet minimaal 8 tekens lang zijn."

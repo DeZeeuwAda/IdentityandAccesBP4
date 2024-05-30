@@ -100,7 +100,7 @@ class LoginActivity : AppCompatActivity() {
                         Toast.makeText(this@LoginActivity, "Verifieer alsjeblieft je email.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Increment failed attempts on unsuccessful login
+                    // Reset het aantal gefaalde pogingen na een succesvolle inlogpoging
                     val newFailedAttempts = failedAttempts + 1
                     // Requirement 20: een account wordt geblokkeerd na maximaal <aantal foute wachtwoordpogingen>
                     // Requirement 21: <aantal foute wachtwoordpogingen>=3
