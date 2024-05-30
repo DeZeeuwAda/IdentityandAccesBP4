@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -29,20 +30,21 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        userEmailEdt = findViewById(R.id.emailInput)
         userNameEdt = findViewById(R.id.gebruikersnaamInput)
         passwordEdt = findViewById(R.id.wachtwoordInput)
-        userEmailEdt = findViewById(R.id.emailInput)
         registerBtn = findViewById(R.id.registreerBtn)
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
         registerBtn.setOnClickListener {
+            val email = userEmailEdt.text.toString()
             val userName = userNameEdt.text.toString()
             val password = passwordEdt.text.toString()
-            val email = userEmailEdt.text.toString()
 
-            if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(password) || TextUtils.isEmpty(email)) {
-                Toast.makeText(this, "Voer alsjeblieft je gebruikersnaam, wachtwoord en email in", Toast.LENGTH_SHORT).show()
+
+            if (TextUtils.isEmpty(email) || TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)) {
+                Toast.makeText(this, "Voer alsjeblieft je E-mail, gebruikersnaam en wachtwoord in.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -61,16 +63,16 @@ class RegisterActivity : AppCompatActivity() {
     // Requirement 10, 11, 12, 13: Validating password and providing specific error messages
     private fun validatePassword(password: String): String? {
         if (password.length < 8) {
-            return "Wachtwoord moet minimaal 8 tekens bevatten."
+            return "Wachtwoord moet minimaal 8 tekens lang zijn."
         }
         if (!password.any { it.isLetter() }) {
-            return "Wachtwoord moet minimaal 1 letter bevatten."
+            return "Wachtwoord moet tenminste 1 letter bevatten."
         }
         if (!password.any { it.isDigit() }) {
-            return "Wachtwoord moet minimaal 1 cijfer bevatten."
+            return "Wachtwoord moet tenminste 1 cijfer bevatten."
         }
         if (!password.any { !it.isLetterOrDigit() }) {
-            return "Wachtwoord moet minimaal 1 speciale karakter bevatten."
+            return "Wachtwoord moet tenminste 1 speciaal teken bevatten."
         }
         return null
     }
@@ -96,13 +98,15 @@ class RegisterActivity : AppCompatActivity() {
                 "password" to password, // Requirement 14: Relevant gegeven = {gebruikersnaam, wachtwoord, e-mail}
                 "isBlocked" to false,
                 "failed_attempts" to 0,
-                "isVerified" to false
+                "isVerified" to false,
+                "timestamp_confirmation" to Date(), // Requirement 22: timestamp-bevestiging
+                "timestamp_blocking" to null // Requirement 22: timestamp-blokkering
             )
 
             user?.uid?.let { uid ->
                 db.collection("users").document(uid).set(userData).await()
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@RegisterActivity, "Account succesvol aangemaakt, check je mail voor de verificatie.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RegisterActivity, "Account is succesvol aangemaakt, check je mail voor de verificatie", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
                     intent.putExtra("userName", userName)
                     intent.putExtra("password", password)
@@ -112,7 +116,7 @@ class RegisterActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
-                Toast.makeText(this@RegisterActivity, "Foutmelding: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@RegisterActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

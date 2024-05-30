@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class LoginActivity : AppCompatActivity() {
 
@@ -43,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
             val password = wachtwoordInput.text.toString()
 
             if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)) {
-                Toast.makeText(this, "Voer alsjeblieft je gebruikersnaam en wachtwoord in", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Voer alsjeblieft je gebruikersnaam en wachtwoord in.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -63,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
             val querySnapshot = db.collection("users").whereEqualTo("username", userName).get().await()
             if (querySnapshot.isEmpty) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@LoginActivity, "Ongeldige gegevens.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "Ongeldige inloggegevens.", Toast.LENGTH_SHORT).show()
                 }
                 return
             }
@@ -75,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
             // Requirement 23: <geldig account> is bevestigd en niet geblokkeerd
             if (isBlocked) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@LoginActivity, "Je account is geblokkeerd wegens teveel foute pogingen.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "Je account is geblokkeerd vanwege meerdere foute inlogpogingen.", Toast.LENGTH_SHORT).show()
                 }
                 return
             }
@@ -85,11 +86,9 @@ class LoginActivity : AppCompatActivity() {
             auth.signInWithEmailAndPassword(email!!, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user = auth.currentUser
-
                     // Requirement 23: <geldig account> is bevestigd en niet geblokkeerd
                     if (user != null && user.isEmailVerified) {
-
-                        // reset het aantal foute pogingen
+                        // Reset failed attempts on successful login
                         db.collection("users").document(document.id)
                             .update("failed_attempts", 0)
                         Toast.makeText(this@LoginActivity, "Succesvol ingelogd", Toast.LENGTH_SHORT).show()
@@ -98,28 +97,27 @@ class LoginActivity : AppCompatActivity() {
                         startActivity(intent)
                         finish()
                     } else {
-                        Toast.makeText(this@LoginActivity, "Verifier alsjeblieft je account.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginActivity, "Verifieer alsjeblieft je email.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Telt het aantal foute pogingen op
+                    // Increment failed attempts on unsuccessful login
                     val newFailedAttempts = failedAttempts + 1
-
                     // Requirement 20: een account wordt geblokkeerd na maximaal <aantal foute wachtwoordpogingen>
                     // Requirement 21: <aantal foute wachtwoordpogingen>=3
                     if (newFailedAttempts >= 3) {
                         db.collection("users").document(document.id)
-                            .update("failed_attempts", newFailedAttempts, "isBlocked", true)
-                        Toast.makeText(this@LoginActivity, "Je account is geblokkeerd wegens teveel foute pogingen.", Toast.LENGTH_SHORT).show()
+                            .update("failed_attempts", newFailedAttempts, "isBlocked", true, "timestamp_blocking", Date())
+                        Toast.makeText(this@LoginActivity, "Je account is geblokkeerd vanwege meerdere foute inlogpogingen.", Toast.LENGTH_SHORT).show()
                     } else {
                         db.collection("users").document(document.id)
                             .update("failed_attempts", newFailedAttempts)
-                        Toast.makeText(this@LoginActivity, "Ongeldige inloggegevens, poging $newFailedAttempts van de 3.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginActivity, "Ongeldige inloggegevens.", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
-                Toast.makeText(this@LoginActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, "Fout: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
